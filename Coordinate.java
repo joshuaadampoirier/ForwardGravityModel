@@ -1,9 +1,10 @@
 package hack.fwd;
 
 public class Coordinate {
-	private double x;
-	private double y;
-	private double z;
+	private double x;		// x-component of location
+	private double y;		// y-component of location
+	private double z;		// z-component of location
+	private double gz;		// vertical component of the gravity (mGal)
 	
 	/*  Create coordinate object
 	 * 	PRE:	double easting - x-component of the coordinate
@@ -13,6 +14,16 @@ public class Coordinate {
 		x = easting;
 		y = northing;
 		z = depth;
+	}
+	
+	/* Set gravity value */
+	public void setGz(double g) {
+		gz = g;
+	}
+	
+	/* Retrieve gravity value */
+	public double getGz() {
+		return gz;
 	}
 	
 	/* Retrieve x-coordinate */

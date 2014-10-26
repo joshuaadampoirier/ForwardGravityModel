@@ -7,6 +7,11 @@ public class Line {
 	protected double b;
 	protected Coordinate a;
 	
+	/* Default constructor */
+	public Line() {
+		// do nothing
+	}
+	
 	/* Constructor given two coordinates */
 	public Line(Coordinate c1, Coordinate c2) {
 		if (c1.getX() == c2.getX()) {
