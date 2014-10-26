@@ -7,13 +7,11 @@ public class GeologicModel {
 	public static final double G = 6.674e-11;
 	
 	private LineSegment spatialLine;
-	private ArrayList<ModelCoord> air = new ArrayList();
 	private ArrayList<ModelCoord> sed = new ArrayList();
 	private ArrayList<ModelCoord> base = new ArrayList();
 	private double nStations;
 	private double dx;
 	private ArrayList<Coordinate> stations = new ArrayList();
-	private double rhoAir;
 	private double rhoSed;
 	private double rhoBase;
 	
@@ -27,27 +25,24 @@ public class GeologicModel {
 	 * 			ArrayList s - list of coordinates for sedimentary section
 	 * 			ArrayList b - list of coordinates for basement
 	 *  POST:	geologic model object built */
-	public GeologicModel(LineSegment ls, ArrayList<ModelCoord> a, ArrayList<ModelCoord> s, ArrayList<ModelCoord> b, double rA, double rS, double rB) {
+	public GeologicModel(LineSegment ls, ArrayList<ModelCoord> s, ArrayList<ModelCoord> b, double rS, double rB) {
 		spatialLine = ls;
-		air = a;
 		sed = s;
 		base = b;
 		nStations = 100;
 		dx = spatialLine.getLength() / nStations;
-		rhoAir = rA;
 		rhoSed = rS;
 		rhoBase = rB;
 		buildStations();
-		buildAir();
 		buildSed();
 		buildBase();
 		calcGrav();
-		/*System.out.println("Printing air block");
-		printAir();
+		
+		/*
 		System.out.println("Printing sedimentary block");
 		printSed();
 		System.out.println("Printing basement block");
-		printBase();*/
+		printBase(); */
 		
 		/*for (int i = 0; i < stations.size(); i++) {
 			System.out.println(stations.get(i).getGz());
@@ -59,23 +54,19 @@ public class GeologicModel {
 	 * 			ArrayList s - list of coordinates for sedimentary section
 	 * 			ArrayList b - list of coordinates for basement
 	 *  POST:	geologic model object built */
-	public GeologicModel(LineSegment ls, ArrayList<ModelCoord> a, ArrayList<ModelCoord> s, ArrayList<ModelCoord> b, double rA, double rS, double rB, double ns) {
+	public GeologicModel(LineSegment ls, ArrayList<ModelCoord> s, ArrayList<ModelCoord> b, double rS, double rB, double ns) {
 		spatialLine = ls;
-		air = a;
 		sed = s;
 		base = b;
 		nStations = ns;
 		dx = spatialLine.getLength() / nStations;
-		rhoAir = rA;
 		rhoSed = rS;
 		rhoBase = rB;
 		buildStations();
-		buildAir();
 		buildSed();
 		buildBase();
 		//calcGrav();
-		System.out.println("Printing air block");
-		printAir();
+
 		System.out.println("Printing sedimentary block");
 		printSed();
 		System.out.println("Printing basement block");
@@ -110,50 +101,26 @@ public class GeologicModel {
 		}
 	}
 	
-	/* build air model - ground-based measurements */
-	public void buildAir() {
-		System.out.println("Helloworld");
-		air.add(new ModelCoord(-30000, 0));
-		air.add(new ModelCoord(30000, 0));
-		air.add(new ModelCoord(30000, 0));
-		air.add(new ModelCoord(-30000, 0));
-	}
-	
-	/* build air model - airborne measurements */
-	public void buildAir(double altitude) {
-		// approximate infinity with 30000 units
-		air.add(new ModelCoord(-30000, -altitude));
-		air.add(new ModelCoord(30000, -altitude));
-		air.add(new ModelCoord(30000, 0));
-		air.add(new ModelCoord(-30000, 0));
-	}
-	
 	/* build sedimentary model */
 	public void buildSed() {
 		// approximate infinity with 30000 units
-		sed.add(new ModelCoord(-30000, 0));
-		sed.add(new ModelCoord(30000, 0));
-		sed.add(new ModelCoord(30000, spatialLine.getEndpoint(false).getZ()));
+		sed.add(new ModelCoord(-300000, 0));
+		sed.add(new ModelCoord(300000, 0));
+		sed.add(new ModelCoord(300000, spatialLine.getEndpoint(false).getZ()));
 		sed.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(false).getZ()));
 		sed.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(true).getZ()));
-		sed.add(new ModelCoord(-30000, spatialLine.getEndpoint(true).getZ()));
+		sed.add(new ModelCoord(-300000, spatialLine.getEndpoint(true).getZ()));
 	}
 	
 	/* build basement model */
 	public void buildBase() {
 		// approximate infinity with 30000 units
-		base.add(new ModelCoord(-30000, spatialLine.getEndpoint(true).getZ()));
+		base.add(new ModelCoord(-300000, spatialLine.getEndpoint(true).getZ()));
 		base.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(true).getZ()));
 		base.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(false).getZ()));
-		base.add(new ModelCoord(30000, spatialLine.getEndpoint(false).getZ()));
-		base.add(new ModelCoord(30000, 30000));
-		base.add(new ModelCoord(-30000, 30000));
-	}
-	
-	public void printAir() {
-		for (int i = 0; i < air.size(); i++) {
-			System.out.println("(" + air.get(i).getX() + "," + air.get(i).getZ() + ")");
-		}
+		base.add(new ModelCoord(300000, spatialLine.getEndpoint(false).getZ()));
+		base.add(new ModelCoord(300000, 300000));
+		base.add(new ModelCoord(-300000, 300000));
 	}
 	
 	public void printSed() {
@@ -170,13 +137,12 @@ public class GeologicModel {
 	
 	public void calcGrav() {
 		for (int i = 0; i < stations.size(); i++) {
-			System.out.println("Calculating forward modeled Gz for station " + i);
+			System.out.println(forwardGravity(i)/0.00001);
 			stations.get(i).setGz(forwardGravity(i));
 		}
 	}
 	
 	public double forwardGravity(int j) {
-		double gA;
 		double gS;
 		double gB;
 		double sumZ;
@@ -184,41 +150,30 @@ public class GeologicModel {
 		
 		/* build new temporary model-space coordinates arrays - resampling their location based on station i's
 		location in model-space */ 
-		ArrayList<ModelCoord> a = getModifiedCoord(j,air);
 		ArrayList<ModelCoord> s = getModifiedCoord(j,sed);
 		ArrayList<ModelCoord> b= getModifiedCoord(j,base);
-		
-		/* compute gravity component resulting from air */
-		/*sumZ = 0;
-		for (int i = 0; i < a.size(); i++) {
-			System.out.println("Computing line integral along Air edge " + i);
-			sumZ += lineIntegral(i, a);
-		}
-		gA = 2 * G * rhoAir * sumZ;
-		System.out.println("Computed air Gz is " + gA); */
-		gA = 0;
 		
 		/* compute gravity component resulting from sedimentary section */
 		sumZ = 0;
 		for (int i = 0; i < s.size(); i++) {
-			System.out.println("Computing line integral along Sedimentary edge " + i);
+			//System.out.println("Computing line integral along Sedimentary edge " + i);
 			sumZ += lineIntegral(i,s);
 		}
 		gS = 2 * G * rhoSed * sumZ;
-		System.out.println("Computed sedimentary Gz is " + gS);
+		//System.out.println("Computed sedimentary Gz is " + gS);
 		
 		/* compute gravity component resulting from basement section */
 		sumZ = 0;
 		for (int i = 0; i < b.size(); i++) {
-			System.out.println("Computing line integral along Basement edge " + i);
+			//System.out.println("Computing line integral along Basement edge " + i);
 			sumZ += lineIntegral(i,s);
 		}
 		gB = 2 * G * rhoBase * sumZ;
-		System.out.println("Computed basement Gz is " + gB);
+		//System.out.println("Computed basement Gz is " + gB);
 		
 		/* sum the different components contributing to the gravity at this station location */
-		gz = gA + gS + gB;
-		System.out.println("Computed total Gz for station is " + gz);
+		gz = gS + gB;
+		//System.out.println("Computed total Gz for station is " + gz);
 		
 		return gz;
 	}
@@ -238,21 +193,19 @@ public class GeologicModel {
 		double xj = mc.get(j).getX();
 		double zi = mc.get(i).getZ();
 		double zj = mc.get(j).getZ();
-		System.out.println("Line integral coords are (" + xi + "," + zi + ") and (" + xj + "," + zj + ")");
-		
-		
+		//System.out.println("Line integral coords are (" + xi + "," + zi + ") and (" + xj + "," + zj + ")");
 		
 		// compute components of the line integral
 		double theta_i = Math.atan(zi / xi);
 		double theta_ip1 = Math.atan(zj / xj);
 		double A = (xj - xi) * (xi*zj - xj*zi) / (Math.pow((xj-xi), 2) + (Math.pow((zj-zi), 2)));
-		System.out.println("A = " + A);
-		if (xi == xj) B = (zj - zi) / 0.01;
-		else B = (zj - zi) / (xj - xi);
-		System.out.println("B = " + B);
+		//System.out.println("A = " + A);
+		if (xi == xj) Math.abs(B = (zj - zi) / 0.00001);
+		else B = Math.abs((zj - zi) / (xj - xi));
+		//System.out.println("B = " + B);
 		double ri_2 = Math.pow(xi, 2) + Math.pow(zi, 2);
 		double rip1_2 = Math.pow(xj, 2) + Math.pow(zj, 2);
-		System.out.println("ri = " + ri_2 + " ri+1 = " + rip1_2);
+		//System.out.println("ri = " + ri_2 + " ri+1 = " + rip1_2);
 		
 		// compute and return value of the line integral along the i-th edge
 		double Z = A * ((theta_i - theta_ip1) + B * Math.log(Math.pow(ri_2,0.5)/Math.pow(rip1_2,0.5)));
@@ -263,7 +216,7 @@ public class GeologicModel {
 	public ArrayList<ModelCoord> getModifiedCoord(int j, ArrayList<ModelCoord> mc) {
 		ArrayList<ModelCoord> t = new ArrayList();
 		for (int i = 0; i < mc.size(); i++) {
-			double x = mc.get(i).getX() - stations.get(j).getX();
+			double x = -1 * (mc.get(i).getX() - stations.get(j).getX());
 			double z = mc.get(i).getZ();
 			ModelCoord temp = new ModelCoord(x,z);
 			t.add(temp);

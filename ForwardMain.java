@@ -21,12 +21,11 @@ public class ForwardMain {
 		ls = new LineSegment(pre, post);
 		
 		// build air, sedimentary, and basement polygons to represent 2D geologic units
-		ArrayList<ModelCoord> a = new ArrayList();
 		ArrayList<ModelCoord> s = new ArrayList();
 		ArrayList<ModelCoord> b = new ArrayList();
 		
 		// build geologic model
-		geoMod = new GeologicModel(ls, a, s, b, rhoAir, rhoSed, rhoBase);
+		geoMod = new GeologicModel(ls, s, b, rhoSed, rhoBase);
 		
 		System.out.println("Geologic model built");
 	}
@@ -37,7 +36,6 @@ public class ForwardMain {
 	 *  POST:	unknown so far */
 	public ForwardMain(Coordinate c1, Coordinate c2) {
 		// initialize default density constants for air, sedimentary, and basement geologic units
-		final double rhoAir = 0.0;
 		final double rhoSed = 2670;
 		final double rhoBase = 3000;
 		
@@ -50,20 +48,19 @@ public class ForwardMain {
 		ls = new LineSegment(pre, post);
 		
 		// build air, sedimentary, and basement polygons to represent 2D geologic units
-		ArrayList<ModelCoord> a = new ArrayList();
 		ArrayList<ModelCoord> s = new ArrayList();
 		ArrayList<ModelCoord> b = new ArrayList();
 		
 		// build geologic model
-		geoMod = new GeologicModel(ls, a, s, b, rhoAir, rhoSed, rhoBase);
+		geoMod = new GeologicModel(ls, s, b, rhoSed, rhoBase);
 		
 		System.out.println("Geologic model built");
 	}
 	
 	public static void main(String[] args) {
 		// default location of 2 MT sites (along with depth to basement)
-		Coordinate c1 = new Coordinate(5,  5,  5000);
-		Coordinate c2 = new Coordinate(10,10,4000);
+		Coordinate c1 = new Coordinate(5000,  5000,  500);
+		Coordinate c2 = new Coordinate(10000,10000,400);
 		
 		// build forward model object
 		ForwardMain m = new ForwardMain(c1, c2);		
