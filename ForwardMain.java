@@ -60,7 +60,7 @@ public class ForwardMain {
 	public static void main(String[] args) {
 		// default location of 2 MT sites (along with depth to basement)
 		Coordinate c1 = new Coordinate(5000,  5000,  500);
-		Coordinate c2 = new Coordinate(10000,10000,4000);
+		Coordinate c2 = new Coordinate(10000,10000,400);
 		
 		// build forward model object
 		ForwardMain m = new ForwardMain(c1, c2);		

@@ -106,19 +106,23 @@ public class GeologicModel {
 		// approximate infinity with 30000 units
 		sed.add(new ModelCoord(-100000, 0));
 		sed.add(new ModelCoord(100000, 0));
-		sed.add(new ModelCoord(100000, spatialLine.getEndpoint(false).getZ()));
-		sed.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(false).getZ()));
-		sed.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(true).getZ()));
-		sed.add(new ModelCoord(-100000, spatialLine.getEndpoint(true).getZ()));
+		//sed.add(new ModelCoord(100000, spatialLine.getEndpoint(false).getZ()));
+		//sed.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(false).getZ()));
+		//sed.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(true).getZ()));
+		//sed.add(new ModelCoord(-100000, spatialLine.getEndpoint(true).getZ()));
+		sed.add(new ModelCoord(100000,1000));
+		sed.add(new ModelCoord(-100000, 1000));
 	}
 	
 	/* build basement model */
 	public void buildBase() {
 		// approximate infinity with 30000 units
-		base.add(new ModelCoord(-100000, spatialLine.getEndpoint(true).getZ()));
-		base.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(true).getZ()));
-		base.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(false).getZ()));
-		base.add(new ModelCoord(100000, spatialLine.getEndpoint(false).getZ()));
+		//base.add(new ModelCoord(-100000, spatialLine.getEndpoint(true).getZ()));
+		//base.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(true).getZ()));
+		//base.add(new ModelCoord(spatialLine.getLength()/2, spatialLine.getEndpoint(false).getZ()));
+		//base.add(new ModelCoord(100000, spatialLine.getEndpoint(false).getZ()));
+		base.add(new ModelCoord(-100000, 1000));
+		base.add(new ModelCoord(100000, 1000));
 		base.add(new ModelCoord(100000, 30000));
 		base.add(new ModelCoord(-100000, 30000));
 	}
@@ -151,7 +155,7 @@ public class GeologicModel {
 		/* build new temporary model-space coordinates arrays - resampling their location based on station i's
 		location in model-space */ 
 		ArrayList<ModelCoord> s = getModifiedCoord(j,sed);
-		ArrayList<ModelCoord> b= getModifiedCoord(j,base);
+		ArrayList<ModelCoord> b = getModifiedCoord(j,base);
 		
 		/* compute gravity component resulting from sedimentary section */
 		sumZ = 0;
@@ -197,18 +201,19 @@ public class GeologicModel {
 		
 		// compute components of the line integral
 		double theta_i = Math.atan(zi / Math.abs(xi));
-		double theta_ip1 = Math.atan(zj / Math.abs(xj));
-		double A = (xj - xi) * (xi*zj - xj*zi) / (Math.pow((xj-xi), 2) + (Math.pow((zj-zi), 2)));
+		double theta_j = Math.atan(zj / Math.abs(xj));
+		double A = ((xj - xi) * (xi*zj - xj*zi)) / (Math.pow((xj-xi), 2) + (Math.pow((zj-zi), 2)));
 		//System.out.println("A = " + A);
-		if (xi == xj) B = (zj - zi) / 0.0001;
+		
+		if (xj == xi) B = (zj - zi) / 0.00001;
 		else B = (zj - zi) / (xj - xi);
-		System.out.println("zj-zi = " + (zj-zi) + "B = " + B);
+		//System.out.println("zj-zi = " + (zj-zi) + "B = " + B);
 		double ri_2 = Math.pow(xi, 2) + Math.pow(zi, 2);
-		double rip1_2 = Math.pow(xj, 2) + Math.pow(zj, 2);
+		double rj_2 = Math.pow(xj, 2) + Math.pow(zj, 2);
 		//System.out.println("ri = " + ri_2 + " ri+1 = " + rip1_2);
 		
 		// compute and return value of the line integral along the i-th edge
-		double Z = A * ((theta_ip1 - theta_i) + B * Math.log(Math.pow(ri_2,0.5)/Math.pow(rip1_2,0.5)));
+		double Z = A * ((theta_i - theta_j) + B * Math.log(Math.pow(ri_2,0.5)/Math.pow(rj_2,0.5)));
 		return Z;
 	}
 	
