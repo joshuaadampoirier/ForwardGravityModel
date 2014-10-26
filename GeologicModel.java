@@ -205,16 +205,16 @@ public class GeologicModel {
 		double A = ((xj - xi) * (xi*zj - xj*zi)) / (Math.pow((xj-xi), 2) + (Math.pow((zj-zi), 2)));
 		//System.out.println("A = " + A);
 		
-		if (xj == xi) B = (zj - zi) / 0.00001;
+		if (xj == xi) B = (zj - zi) / 1000;
 		else B = (zj - zi) / (xj - xi);
-		//System.out.println("zj-zi = " + (zj-zi) + "B = " + B);
+		//System.out.println("zj-zi = " + (zj-zi) + " B = " + B);
 		double ri_2 = Math.pow(xi, 2) + Math.pow(zi, 2);
 		double rj_2 = Math.pow(xj, 2) + Math.pow(zj, 2);
 		//System.out.println("ri = " + ri_2 + " ri+1 = " + rip1_2);
 		
 		// compute and return value of the line integral along the i-th edge
 		double Z = A * ((theta_i - theta_j) + B * Math.log(Math.pow(ri_2,0.5)/Math.pow(rj_2,0.5)));
-		return Z;
+		return (Math.pow(rj_2,0.5));
 	}
 	
 	/* create a modified array list of model-space coordinates using station j as the origin */
